@@ -1,0 +1,35 @@
+bot = Bot(bot_token)
+dp = Dispatcher(bot)
+
+@dp.message_handler(commands=['start_check'])
+async def start_check(message: types.Message):
+    arguments = message.get_args()
+    await bot.send_message(message.chat.id, "Проверка событий начата")
+    scheduler.add_job(check_events, "interval", seconds=int(arguments), args=[message], id=str(message.chat.id),
+                      next_run_time=datetime.now(), max_instances=5)
+
+@dp.message_handler(commands=['stop_check'])
+async def text_in_handler(message: types.Message):
+    scheduler.pause_job(str(message.chat.id))
+    await bot.send_message(message.chat.id, "Проверка событий закончена")
+
+async def check_events(message):
+    # формирование файла file
+    # ...
+    await bot.send_document(message.chat.id, caption=f'Проверка заняла {diff_minutes} мин.', document=file)
+
+scheduler = AsyncIOScheduler()
+scheduler.start()
+executor.start_polling(dp)
+
+
+
+
+
+
+
+
+
+
+
+
